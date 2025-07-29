@@ -16,4 +16,4 @@ A REST API for managing tasks with PostgreSQL, JWT auth, and Docker deployment.
 ## 🚀 How to Run
 1. Clone the repo:
    ```bash
-   git clone https://github.com/your-username/task-management-system.git
+   git clone https://github.com/nazmul609/task-management-system.git
