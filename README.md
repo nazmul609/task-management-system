@@ -3,6 +3,23 @@
 ## 📌 Overview
 A REST API for managing tasks with PostgreSQL, JWT auth, and Docker deployment.
 
+🔹 Project Structure (MVC Pattern)
+
+We’re following Model-View-Controller (MVC) + Layered Architecture:
+
+text
+src/
+├── main/
+│   ├── java/
+│   │   └── com.taskmanager.app/
+│   │       ├── controller/   (REST endpoints)   → **C** in MVC
+│   │       ├── entity/       (Database models)  → **M** in MVC
+│   │       ├── repository/   (DB operations)    → Data Access Layer
+│   │       └── service/      (Business logic)   → 
+│   └── resources/
+│       ├── application.properties (Configs)
+└── test/ (Unit tests)
+
 ## 🛠️ Tech Stack
 - Java 21 + Spring Boot 3.2
 - PostgreSQL
