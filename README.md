@@ -1,17 +1,26 @@
 # Task Management System (Spring Boot)
 
 ## 📌 Overview
-A REST API for managing tasks with PostgreSQL, JWT auth, and Docker deployment.
+A Task Management System - a real-world application similar to Trello/Jira with complete
+CRUD operations, authentication, file handling, and deployment.
 
 
-## 🛠️ Tech Stack
-- Java 21 + Spring Boot 3.2
-- PostgreSQL
+## 🛠️ Technologies
+- Spring Boot 3.x
+- Spring Security 6
+- Spring Data JPA
+- PostgresSQL Database
+- JWT Authentication
+- Maven/Gradle
 - Docker
+- JUnit 5
+- Swagger/OpenAPI
+- Spring Boot Actuator
+
 
 ## 📅 Progress
 - **Day 1**: Project setup + Hello World API.
-- **Day 2**: Task CRUD (POST/GET) working.
+- **Day 2**: Spring Boot Architecture & Dependency Injection.
 
 ## 🚀 How to Run
 1. Clone the repo:
