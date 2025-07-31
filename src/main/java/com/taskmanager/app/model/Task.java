@@ -1,12 +1,27 @@
 package com.taskmanager.app.model;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
+import jakarta.validation.constraints.*;
+
 public class Task {
     private Long id;
+
+    @NotBlank(message = "Title is required and cannot be empty")
+    @Size(min = 1, max = 100, message = "Title must be between 1 and 100 characters")
     private String title;
+
+    @Size(max = 500, message = "Description cannot exceed 500 characters")
     private String description;
+
+    @NotBlank(message = "Status is required")
+    @Pattern(regexp = "^(TODO|IN_PROGRESS|DONE)$",
+            message = "Status must be one of: TODO, IN_PROGRESS, DONE")
     private String status;
 
-    // Default constructor
+    // Default constructor (required for JSON parsing)
     public Task() {
     }
 
@@ -52,4 +67,14 @@ public class Task {
         this.status = status;
     }
 
+    // toString method for debugging
+    @Override
+    public String toString() {
+        return "Task{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", status='" + status + '\'' +
+                '}';
+    }
 }
