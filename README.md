@@ -22,6 +22,9 @@ CRUD operations, authentication, file handling, and deployment.
 - **Day 1**: Project setup + Hello World API.
 - **Day 2**: Spring Boot Architecture & Dependency Injection.
 - **Day 3**: Advanced REST APIs & Error Handling.
+- **Day 3**: Advanced REST APIs & Error Handling.
+
+
 
 ## 🚀 How to Run
 1. Clone the repo:

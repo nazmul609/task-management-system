@@ -2,12 +2,11 @@ package com.taskmanager.app.controller;
 
 import com.taskmanager.app.model.Task;
 import com.taskmanager.app.service.TaskService;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -110,5 +109,23 @@ public class TaskController {
 
         List<Task> tasks = taskService.getTasksByStatus(status);
         return ResponseEntity.ok(tasks);
+    }
+
+    // GET /api/tasks/search?keyword=spring - Search tasks
+    @GetMapping("/search")
+    public ResponseEntity<List<Task>> searchTasks(@RequestParam String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<Task> tasks = taskService.searchTasks(keyword);
+        return ResponseEntity.ok(tasks);
+    }
+
+    // GET /api/tasks/stats - Get task statistics
+    @GetMapping("/stats")
+    public ResponseEntity<TaskService.TaskStats> getTaskStatistics() {
+        TaskService.TaskStats stats = taskService.getTaskStatistics();
+        return ResponseEntity.ok(stats);
     }
 }
