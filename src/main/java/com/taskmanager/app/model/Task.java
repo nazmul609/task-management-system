@@ -33,6 +33,13 @@ public class Task {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    // =====================================================
+    // NEW: RELATIONSHIP - Many Tasks belong to One User
+    // =====================================================
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = true) // Foreign key column
+    private User user;
+
     // Default constructor (required by JPA)
     public Task() {
     }
@@ -44,6 +51,12 @@ public class Task {
         this.status = status;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+    }
+
+    // Constructor with user
+    public Task(String title, String description, String status, User user) {
+        this(title, description, status);
+        this.user = user;
     }
 
     // JPA lifecycle methods
@@ -58,57 +71,87 @@ public class Task {
         updatedAt = LocalDateTime.now();
     }
 
-    // Getters
+    // =====================================================
+    // HELPER METHODS
+    // =====================================================
+
+    // Check if task is assigned to a user
+    public boolean isAssigned() {
+        return user != null;
+    }
+
+    // Get user's full name (safe method that handles null user)
+    public String getAssignedToName() {
+        return user != null ? user.getFullName() : "Unassigned";
+    }
+
+    // Get username (safe method)
+    public String getAssignedToUsername() {
+        return user != null ? user.getUsername() : null;
+    }
+
+    // =====================================================
+    // GETTERS AND SETTERS
+    // =====================================================
+
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    // Setters
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    // toString for debugging
+    // NEW: User relationship getter and setter
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    // toString for debugging (avoiding circular reference with user)
     @Override
     public String toString() {
         return "Task{" +
@@ -118,6 +161,7 @@ public class Task {
                 ", status='" + status + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", assignedTo=" + getAssignedToUsername() +
                 '}';
     }
 }
