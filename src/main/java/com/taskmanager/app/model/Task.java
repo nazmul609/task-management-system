@@ -1,5 +1,6 @@
 package com.taskmanager.app.model;
 
+import com.taskmanager.app.validation.ValidTaskStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
@@ -23,8 +24,7 @@ public class Task {
 
     @Column(name = "status", nullable = false, length = 20)
     @NotBlank(message = "Status is required")
-    @Pattern(regexp = "^(TODO|IN_PROGRESS|DONE)$",
-            message = "Status must be one of: TODO, IN_PROGRESS, DONE")
+    @ValidTaskStatus
     private String status;
 
     @Column(name = "created_at", nullable = false, updatable = false)

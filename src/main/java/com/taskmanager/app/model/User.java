@@ -1,5 +1,6 @@
 package com.taskmanager.app.model;
 
+import com.taskmanager.app.validation.ValidUsername;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
@@ -17,8 +18,10 @@ public class User {
     @Column(name = "username", nullable = false, unique = true, length = 50)
     @NotBlank(message = "Username is required and cannot be empty")
     @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
-    @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "Username can only contain letters, numbers, and underscores")
+//    @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "Username can only contain letters, numbers, and underscores")
+    @ValidUsername
     private String username;
+
 
     @Column(name = "email", nullable = false, unique = true, length = 100)
     @NotBlank(message = "Email is required")
