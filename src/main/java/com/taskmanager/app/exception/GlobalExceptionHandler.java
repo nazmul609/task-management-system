@@ -1,5 +1,6 @@
 package com.taskmanager.app.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -7,11 +8,13 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import jakarta.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-@ControllerAdvice // This handles exceptions globally across all controllers
+@ControllerAdvice
 public class GlobalExceptionHandler {
 
     // Handle validation errors (when @Valid fails)
@@ -36,7 +39,53 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
-    // Handle type mismatch errors (e.g., sending "abc" for Long id)
+    // Handle constraint violations (for method-level validation)
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleConstraintViolation(
+            ConstraintViolationException ex) {
+
+        Map<String, Object> errorResponse = new HashMap<>();
+
+        String violations = ex.getConstraintViolations()
+                .stream()
+                .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
+                .collect(Collectors.joining(", "));
+
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
+        errorResponse.put("error", "Constraint Violation");
+        errorResponse.put("message", violations);
+
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    // Handle database constraint violations (unique constraints, etc.)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleDataIntegrityViolation(
+            DataIntegrityViolationException ex) {
+
+        Map<String, Object> errorResponse = new HashMap<>();
+
+        String message = "Database constraint violation";
+
+        // Check for common constraint violations
+        if (ex.getMessage().contains("users.username")) {
+            message = "Username already exists";
+        } else if (ex.getMessage().contains("users.email")) {
+            message = "Email already exists";
+        } else if (ex.getMessage().contains("tasks.title")) {
+            message = "Task title already exists";
+        }
+
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.CONFLICT.value());
+        errorResponse.put("error", "Data Integrity Violation");
+        errorResponse.put("message", message);
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
+    // Handle type mismatch errors
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Map<String, Object>> handleTypeMismatch(
             MethodArgumentTypeMismatchException ex) {
@@ -48,6 +97,20 @@ public class GlobalExceptionHandler {
         errorResponse.put("error", "Invalid Parameter Type");
         errorResponse.put("message", String.format("Invalid value '%s' for parameter '%s'. Expected type: %s",
                 ex.getValue(), ex.getName(), ex.getRequiredType().getSimpleName()));
+
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    // Handle illegal argument exceptions
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
+
+        Map<String, Object> errorResponse = new HashMap<>();
+
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
+        errorResponse.put("error", "Invalid Request");
+        errorResponse.put("message", ex.getMessage());
 
         return ResponseEntity.badRequest().body(errorResponse);
     }
@@ -65,29 +128,5 @@ public class GlobalExceptionHandler {
         errorResponse.put("details", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-    }
-
-    // Handle illegal argument exceptions
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
-
-        Map<String, Object> errorResponse = new HashMap<>();
-
-        errorResponse.put("timestamp", LocalDateTime.now());
-        errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
-        errorResponse.put("error", "Invalid Request");
-        errorResponse.put("message", ex.getMessage());
-
-        return ResponseEntity.badRequest().body(errorResponse);
-    }
-
-    // Custom method to create error response
-    private Map<String, Object> createErrorResponse(HttpStatus status, String error, String message) {
-        Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("timestamp", LocalDateTime.now());
-        errorResponse.put("status", status.value());
-        errorResponse.put("error", error);
-        errorResponse.put("message", message);
-        return errorResponse;
     }
 }
