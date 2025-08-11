@@ -23,8 +23,17 @@ CRUD operations, authentication, file handling, and deployment.
 - **Day 2**: Spring Boot Architecture & Dependency Injection.
 - **Day 3**: Advanced REST APIs & Error Handling.
 - **Day 4**: Spring Data JPA and PostgreSQL integration.
-- **Day 4**: Advanced JPA & Database Design - User Entities & Relationships
-
+- **Day 5**: Advanced JPA & Database Design - User Entities & Relationships
+- **Day 6**: Validation & Error Handling
+- **Day 7**: 
+- **Day 8**: 
+- **Day 9**: 
+- **Day 10**: 
+- **Day 11**: 
+- **Day 12**: 
+- **Day 13**: 
+- **Day 14**: 
+- **Day 15**: 
 
 
 ## 🚀 How to Run
