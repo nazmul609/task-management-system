@@ -181,6 +181,24 @@ public class User {
         this.active = active;
     }
 
+    // =====================================================
+    // JWT AUTHENTICATION SUPPORT
+    // =====================================================
+
+    // Convenience method for JWT authentication
+    public boolean isActive() {
+        return active != null && active;
+    }
+
+    // Convenience methods for activation/deactivation
+    public void activate() {
+        this.active = true;
+    }
+
+    public void deactivate() {
+        this.active = false;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }

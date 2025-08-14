@@ -25,8 +25,8 @@ CRUD operations, authentication, file handling, and deployment.
 - **Day 4**: Spring Data JPA and PostgreSQL integration.
 - **Day 5**: Advanced JPA & Database Design - User Entities & Relationships
 - **Day 6**: Validation & Error Handling
-- **Day 7**: 
-- **Day 8**: 
+- **Day 7**: Security Fundamentals
+- **Day 8**: JWT Authentication Implementation
 - **Day 9**: 
 - **Day 10**: 
 - **Day 11**: 

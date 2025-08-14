@@ -2,6 +2,7 @@ package com.taskmanager.app.service;
 
 import com.taskmanager.app.model.User;
 import com.taskmanager.app.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,10 +15,12 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // Constructor injection
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // =====================================================
@@ -50,6 +53,12 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+    // Get user by username (for JWT authentication) - Throws exception if not found
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+    }
+
     // Get user by email
     public Optional<User> findUserByEmail(String email) {
         return userRepository.findByEmail(email);
@@ -72,9 +81,11 @@ public class UserService {
             user.setActive(true);
         }
 
-        // For now, we'll store password as-is
-        // In Day 7-8 (Security), we'll add password encoding
 
+// Encode password before saving
+        if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         return userRepository.save(user);
     }
 
@@ -254,3 +265,4 @@ public class UserService {
         }
     }
 }
+

@@ -1,51 +1,104 @@
 package com.taskmanager.app.config;
 
+import com.taskmanager.app.service.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Security Configuration for JWT Authentication
+ *
+ * Changes from Basic Auth:
+ * - Disabled HTTP Basic Authentication
+ * - Added JWT Authentication Filter
+ * - Configured stateless session management
+ * - Enhanced authentication provider
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // Step 1: Configure which endpoints are secured
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
+
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    /**
+     * Configure HTTP Security with JWT
+     */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // Disable CSRF for stateless JWT authentication
+                .csrf(csrf -> csrf.disable())
+
                 // Configure authorization rules
-                .authorizeHttpRequests(auth -> auth
-                        // Public endpoints (no authentication required)
-                        .requestMatchers("/api/auth/**").permitAll()          // Login/Register endpoints
-                        .requestMatchers("/hello").permitAll()               // Hello endpoint for testing
-                        .requestMatchers("/api/users/check/**").permitAll()  // Username/email availability check
+                .authorizeHttpRequests(authz -> authz
+                        // Public endpoints - no authentication required
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/users/check/**").permitAll()
+                        // No H2 console needed for PostgreSQL
 
-                        // Protected endpoints (authentication required)
-                        .requestMatchers("/api/users/**").authenticated()    // User management
-                        .requestMatchers("/api/tasks/**").authenticated()    // Task management
-
-                        // All other requests need authentication
+                        // All other endpoints require authentication
                         .anyRequest().authenticated()
                 )
 
-                // Use HTTP Basic Authentication (for now)
-                .httpBasic(basic -> {})
+                // Disable HTTP Basic Authentication (we're using JWT now)
+                .httpBasic(httpBasic -> httpBasic.disable())
 
-                // Disable CSRF for REST APIs (we'll use JWT later)
-                .csrf(csrf -> csrf.disable())
+                // Configure session management as stateless
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
 
-                // Disable form login (we're building REST API)
-                .formLogin(form -> form.disable());
+                // Set custom authentication provider
+                .authenticationProvider(authenticationProvider())
+
+                // Add JWT filter before UsernamePasswordAuthenticationFilter
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // No frame options needed for PostgreSQL
+                .headers(headers -> headers.frameOptions().sameOrigin());
 
         return http.build();
     }
 
-    // Step 2: Password encoder bean
+    /**
+     * Password encoder bean
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    /**
+     * Authentication provider with custom user details service
+     */
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
+
+    /**
+     * Authentication manager bean
+     */
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 }
