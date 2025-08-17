@@ -4,6 +4,8 @@ import com.taskmanager.app.validation.ValidTaskStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity // This tells JPA this is a database table
 @Table(name = "tasks") // Optional: specify table name
@@ -149,6 +151,74 @@ public class Task {
 
     public void setUser(User user) {
         this.user = user;
+    }
+    // =====================================================
+// NEW: FILE ATTACHMENT RELATIONSHIP
+// =====================================================
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<FileAttachment> fileAttachments = new ArrayList<>();
+
+// =====================================================
+// FILE ATTACHMENT HELPER METHODS
+// =====================================================
+
+    // Add file attachment to task
+    public void addFileAttachment(FileAttachment fileAttachment) {
+        fileAttachments.add(fileAttachment);
+        fileAttachment.setTask(this);
+    }
+
+    // Remove file attachment from task
+    public void removeFileAttachment(FileAttachment fileAttachment) {
+        fileAttachments.remove(fileAttachment);
+        fileAttachment.setTask(null);
+    }
+
+    // Get active file attachments count
+    public int getActiveAttachmentsCount() {
+        return (int) fileAttachments.stream()
+                .filter(FileAttachment::getIsActive)
+                .count();
+    }
+
+    // Get image attachments count
+    public int getImageAttachmentsCount() {
+        return (int) fileAttachments.stream()
+                .filter(attachment -> attachment.getIsActive() && attachment.getIsImage())
+                .count();
+    }
+
+    // Get document attachments count
+    public int getDocumentAttachmentsCount() {
+        return (int) fileAttachments.stream()
+                .filter(attachment -> attachment.getIsActive() && !attachment.getIsImage())
+                .count();
+    }
+
+    // Check if task has attachments
+    public boolean hasAttachments() {
+        return fileAttachments.stream().anyMatch(FileAttachment::getIsActive);
+    }
+
+    // Get total attachment size
+    public long getTotalAttachmentSize() {
+        return fileAttachments.stream()
+                .filter(FileAttachment::getIsActive)
+                .mapToLong(FileAttachment::getFileSize)
+                .sum();
+    }
+
+// =====================================================
+// GETTER AND SETTER FOR FILE ATTACHMENTS
+// =====================================================
+
+    public List<FileAttachment> getFileAttachments() {
+        return fileAttachments;
+    }
+
+    public void setFileAttachments(List<FileAttachment> fileAttachments) {
+        this.fileAttachments = fileAttachments;
     }
 
     // toString for debugging (avoiding circular reference with user)
