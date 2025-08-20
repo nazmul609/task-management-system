@@ -134,8 +134,8 @@ public class GlobalExceptionHandler {
     }
 
     // =====================================================
-// FILE UPLOAD EXCEPTION HANDLERS
-// =====================================================
+    // FILE UPLOAD EXCEPTION HANDLERS
+    // =====================================================
 
     // Handle file storage exceptions
     @ExceptionHandler(FileStorageService.FileStorageException.class)

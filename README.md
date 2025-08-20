@@ -19,21 +19,16 @@ CRUD operations, authentication, file handling, and deployment.
 
 
 ## 📅 Progress
-- **Day 1**: Project setup + Hello World API.
-- **Day 2**: Spring Boot Architecture & Dependency Injection.
-- **Day 3**: Advanced REST APIs & Error Handling.
-- **Day 4**: Spring Data JPA and PostgreSQL integration.
-- **Day 5**: Advanced JPA & Database Design - User Entities & Relationships
-- **Day 6**: Validation & Error Handling
-- **Day 7**: Security Fundamentals
-- **Day 8**: JWT Authentication Implementation
-- **Day 9**: 
-- **Day 10**: 
-- **Day 11**: 
-- **Day 12**: 
-- **Day 13**: 
-- **Day 14**: 
-- **Day 15**: 
+- ****: Project setup + Hello World API.
+- ****: Spring Boot Architecture & Dependency Injection.
+- ****: Advanced REST APIs & Error Handling.
+- ****: Spring Data JPA and PostgreSQL integration.
+- ****: Advanced JPA & Database Design - User Entities & Relationships
+- ****: Validation & Error Handling
+- ****: Security Fundamentals
+- ****: JWT Authentication Implementation
+- ****: File Attachments
+
 
 
 ## 🚀 How to Run
